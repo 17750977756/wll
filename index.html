@@ -2,71 +2,67 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>反应力挑战游戏</title>
+  <title>反应挑战游戏</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
-      --bg: linear-gradient(to right, #e0f7fa, #ffffff);
-      --text: #2e7d32;
-      --panel: #f9fbe7;
-      --target: #ff7043;
-      --button: #66bb6a;
-      --shadow: rgba(0,0,0,0.1);
+      --bg: linear-gradient(to right, #a1c4fd, #c2e9fb);
+      --text: #333;
+      --panel: #ffffffcc;
+      --target: #ff5252;
+      --button: #4caf50;
+      --shadow: rgba(0,0,0,0.15);
     }
 
     body.dark {
-      --bg: linear-gradient(to right, #2e2e2e, #1c1c1c);
-      --text: #f8f8f8;
-      --panel: #333;
-      --target: #ffca28;
+      --bg: linear-gradient(to right, #1c1c1c, #2c2c2c);
+      --text: #f1f1f1;
+      --panel: #2f2f2fcc;
+      --target: #ffc107;
       --button: #90caf9;
       --shadow: rgba(255,255,255,0.1);
     }
 
     body {
-      font-family: "Microsoft YaHei", sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
-      text-align: center;
       background: var(--bg);
-      transition: background 0.3s;
+      color: var(--text);
+      text-align: center;
     }
 
     header {
-      padding: 30px 10px 10px;
+      padding: 20px 10px 10px;
     }
 
     h1 {
-      font-size: 36px;
-      color: var(--text);
+      font-size: 2em;
       margin-bottom: 5px;
     }
 
-    p.description {
-      font-size: 16px;
-      color: #888;
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
     }
 
     #score-time-box {
       display: flex;
       justify-content: center;
       gap: 30px;
-      margin-top: 20px;
-      color: var(--text);
-      font-size: 18px;
+      margin: 10px 0 15px;
+      font-size: 1.1em;
     }
 
     #game-area {
       position: relative;
-      width: 90%;
-      max-width: 600px;
       height: 400px;
-      margin: 20px auto;
       background-color: var(--panel);
-      border-radius: 16px;
-      box-shadow: 0 4px 20px var(--shadow);
+      border-radius: 20px;
+      box-shadow: 0 4px 15px var(--shadow);
       overflow: hidden;
-      touch-action: manipulation;
+      margin: 10px 0;
     }
 
     .target {
@@ -76,86 +72,86 @@
       border-radius: 50%;
       position: absolute;
       cursor: pointer;
-      animation: pop 0.3s ease;
+      animation: appear 0.3s ease;
     }
 
-    @keyframes pop {
-      from { transform: scale(0); opacity: 0; }
+    @keyframes appear {
+      from { transform: scale(0.2); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
     }
 
-    button {
-      padding: 12px 24px;
-      margin: 10px 5px;
-      font-size: 16px;
+    .controls {
+      margin: 10px 0 20px;
+    }
+
+    select, button {
+      padding: 10px 16px;
+      margin: 5px;
+      font-size: 15px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       background-color: var(--button);
       color: white;
       box-shadow: 0 3px 10px var(--shadow);
-      transition: background-color 0.3s;
     }
 
-    button:hover {
+    button:hover, select:hover {
       filter: brightness(1.1);
     }
 
-    #qr-code {
-      margin-top: 40px;
-      padding-top: 20px;
-      border-top: 1px solid #ddd;
+    #leaderboard, #qr-code {
+      margin: 20px 0;
+      font-size: 16px;
     }
 
     #qr-code img {
-      width: 140px;
+      width: 130px;
       border-radius: 10px;
-      box-shadow: 0 4px 8px var(--shadow);
+      box-shadow: 0 3px 6px var(--shadow);
     }
 
-    #leaderboard {
-      margin-top: 20px;
-      font-size: 16px;
-      color: #555;
-    }
-
-    @media (max-width: 500px) {
-      .target {
-        width: 50px;
-        height: 50px;
-      }
-
+    @media (max-width: 600px) {
       #game-area {
         height: 300px;
       }
-
-      h1 {
-        font-size: 28px;
+      .target {
+        width: 50px;
+        height: 50px;
       }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>反应力挑战小游戏</h1>
-    <p class="description">30秒内点击最多圆圈，挑战你的极限！</p>
+    <h1>🎯 反应挑战小游戏</h1>
+    <p>30秒内点中最多目标，看看你多快！</p>
   </header>
 
-  <div id="score-time-box">
-    <div id="score-board">得分：0</div>
-    <div id="time-left">剩余时间：30 秒</div>
-  </div>
+  <div class="container">
+    <div class="controls">
+      <button id="start-btn">开始游戏</button>
+      <select id="difficulty">
+        <option value="easy">难度：简单</option>
+        <option value="medium" selected>难度：中等</option>
+        <option value="hard">难度：困难</option>
+      </select>
+      <button id="theme-toggle">切换主题</button>
+    </div>
 
-  <div id="game-area"></div>
+    <div id="score-time-box">
+      <div id="score-board">得分：0</div>
+      <div id="time-left">剩余时间：30 秒</div>
+    </div>
 
-  <button id="start-btn">开始游戏</button>
-  <button id="theme-toggle">切换主题</button>
+    <div id="game-area"></div>
 
-  <div id="leaderboard">历史最高分：<span id="high-score">0</span></div>
+    <div id="leaderboard">🎖️ 最高得分：<span id="high-score">0</span></div>
 
-  <div id="qr-code">
-    <img src="https___17750977756.github.io_wll_.png" alt="网页二维码">
-    <p>扫码访问本页面</p>
+    <div id="qr-code">
+      <p>📱 扫码手机访问：</p>
+      <img src="https___17750977756.github.io_wll_.png" alt="二维码">
+    </div>
   </div>
 
   <!-- 音效 -->
@@ -167,32 +163,48 @@
     const scoreBoard = document.getElementById('score-board');
     const timeLeftDisplay = document.getElementById('time-left');
     const startBtn = document.getElementById('start-btn');
+    const difficultySelect = document.getElementById('difficulty');
+    const themeToggle = document.getElementById('theme-toggle');
     const clickSound = document.getElementById('click-sound');
     const endSound = document.getElementById('end-sound');
     const highScoreEl = document.getElementById('high-score');
-    const themeToggle = document.getElementById('theme-toggle');
 
     let score = 0;
     let timeLeft = 30;
     let gameInterval, countdownTimer;
+    let spawnRate = 1000;
+    let targetSize = 60;
 
-    function getHighScore() {
-      return parseInt(localStorage.getItem("highScore") || "0");
-    }
+    const getHighScore = () => parseInt(localStorage.getItem("highScore") || "0");
+    const setHighScore = (val) => localStorage.setItem("highScore", val);
 
-    function setHighScore(newScore) {
-      localStorage.setItem("highScore", newScore);
-    }
+    const setDifficulty = (level) => {
+      switch (level) {
+        case "easy":
+          spawnRate = 1200;
+          targetSize = 70;
+          break;
+        case "medium":
+          spawnRate = 1000;
+          targetSize = 60;
+          break;
+        case "hard":
+          spawnRate = 600;
+          targetSize = 40;
+          break;
+      }
+    };
 
-    function createTarget() {
-      const target = document.createElement('div');
-      target.className = 'target';
+    const createTarget = () => {
+      const target = document.createElement("div");
+      target.className = "target";
+      target.style.width = `${targetSize}px`;
+      target.style.height = `${targetSize}px`;
 
-      const size = target.offsetWidth;
-      const maxX = gameArea.clientWidth - 60;
-      const maxY = gameArea.clientHeight - 60;
-      target.style.left = Math.random() * maxX + 'px';
-      target.style.top = Math.random() * maxY + 'px';
+      const maxX = gameArea.clientWidth - targetSize;
+      const maxY = gameArea.clientHeight - targetSize;
+      target.style.left = Math.random() * maxX + "px";
+      target.style.top = Math.random() * maxY + "px";
 
       target.onclick = () => {
         clickSound.currentTime = 0;
@@ -204,24 +216,24 @@
       };
 
       gameArea.appendChild(target);
-    }
+    };
 
-    function startGame() {
+    const startGame = () => {
+      setDifficulty(difficultySelect.value);
       score = 0;
       timeLeft = 30;
       scoreBoard.textContent = `得分：${score}`;
       timeLeftDisplay.textContent = `剩余时间：${timeLeft} 秒`;
       gameArea.innerHTML = '';
       startBtn.disabled = true;
-      startBtn.textContent = '游戏中...';
+      startBtn.textContent = "游戏中...";
 
       createTarget();
-
       gameInterval = setInterval(() => {
-        const existing = document.querySelector('.target');
+        const existing = document.querySelector(".target");
         if (existing) existing.remove();
         createTarget();
-      }, 1000);
+      }, spawnRate);
 
       countdownTimer = setInterval(() => {
         timeLeft--;
@@ -230,37 +242,34 @@
           endGame();
         }
       }, 1000);
-    }
+    };
 
-    function endGame() {
+    const endGame = () => {
       clearInterval(gameInterval);
       clearInterval(countdownTimer);
-      const target = document.querySelector('.target');
-      if (target) target.remove();
+      const t = document.querySelector(".target");
+      if (t) t.remove();
 
       endSound.play();
-      alert(`游戏结束！你的得分是 ${score} 分！`);
+      alert(`游戏结束，你的得分是：${score} 分！`);
 
-      const oldHigh = getHighScore();
-      if (score > oldHigh) {
+      if (score > getHighScore()) {
         setHighScore(score);
         highScoreEl.textContent = score;
-        alert('🎉 恭喜你打破了最高分记录！');
+        alert("🎉 你打破了历史最高分！");
       }
 
-      startBtn.textContent = '再来一次';
       startBtn.disabled = false;
-    }
+      startBtn.textContent = "再来一次";
+    };
 
     startBtn.onclick = startGame;
 
-    // 主题切换
     themeToggle.onclick = () => {
       document.body.classList.toggle("dark");
       themeToggle.textContent = document.body.classList.contains("dark") ? "切换为浅色" : "切换为深色";
     };
 
-    // 初始化高分
     highScoreEl.textContent = getHighScore();
   </script>
 </body>
