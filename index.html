@@ -6,92 +6,140 @@
   <style>
     body {
       font-family: "Microsoft YaHei", sans-serif;
-      background: linear-gradient(to right, #fdfbfb, #ebedee);
+      background: linear-gradient(to right, #e0f7fa, #ffffff);
+      margin: 0;
+      padding: 0;
       text-align: center;
-      padding: 50px;
+    }
+
+    header {
+      padding: 40px 20px 10px;
     }
 
     h1 {
+      font-size: 36px;
+      color: #2e7d32;
+      margin-bottom: 10px;
+    }
+
+    p.description {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    #score-time-box {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      font-size: 18px;
       color: #333;
+      margin-bottom: 10px;
     }
 
     #game-area {
       position: relative;
       width: 600px;
       height: 400px;
-      margin: 20px auto;
-      background-color: #f1f1f1;
-      border: 2px solid #ccc;
-      border-radius: 12px;
+      margin: 0 auto 20px;
+      background-color: #f9fbe7;
+      border: 3px solid #c5e1a5;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
     }
 
     .target {
       width: 60px;
       height: 60px;
-      background-color: #ff6b6b;
+      background-color: #ff7043;
       border-radius: 50%;
       position: absolute;
       cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.1s;
+    }
+
+    .target:active {
+      transform: scale(0.9);
     }
 
     #start-btn {
-      padding: 10px 20px;
+      padding: 12px 24px;
       font-size: 18px;
       border: none;
-      border-radius: 8px;
-      background-color: #4CAF50;
+      border-radius: 10px;
+      background-color: #66bb6a;
       color: white;
       cursor: pointer;
-      margin-top: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: background-color 0.3s;
     }
 
-    #score-board {
-      font-size: 20px;
-      margin-top: 15px;
+    #start-btn:hover {
+      background-color: #43a047;
     }
 
     #qr-code {
-      margin-top: 40px;
+      margin: 50px auto 20px;
+      border-top: 1px solid #ddd;
+      padding-top: 20px;
     }
 
     #qr-code img {
-      width: 180px;
+      width: 160px;
       height: auto;
-      border: 1px solid #ccc;
       border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
     #qr-code p {
-      color: #666;
+      color: #777;
       font-size: 14px;
       margin-top: 10px;
+    }
+
+    @media (max-width: 700px) {
+      #game-area {
+        width: 90%;
+        height: 300px;
+      }
+
+      .target {
+        width: 50px;
+        height: 50px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>点击反应小游戏</h1>
-  <p>点击出现在区域内的红点，限时 30 秒，看你能得几分！</p>
+  <header>
+    <h1>点击反应小游戏</h1>
+    <p class="description">在 30 秒内点击尽可能多的圆点，看看你的反应速度！</p>
+  </header>
+
+  <div id="score-time-box">
+    <div id="score-board">得分：0</div>
+    <div id="time-left">剩余时间：30 秒</div>
+  </div>
+
   <div id="game-area"></div>
+
   <button id="start-btn">开始游戏</button>
-  <div id="score-board">得分：0</div>
 
   <div id="qr-code">
     <img src="https___17750977756.github.io_wll_.png" alt="网页二维码">
-    <p>扫码查看本网页</p>
+    <p>扫码查看此网页</p>
   </div>
 
   <script>
     const gameArea = document.getElementById('game-area');
     const scoreBoard = document.getElementById('score-board');
+    const timeLeftDisplay = document.getElementById('time-left');
     const startBtn = document.getElementById('start-btn');
 
     let score = 0;
     let timeLeft = 30;
-    let gameInterval;
-    let timer;
+    let gameInterval, countdownTimer;
 
     function createTarget() {
       const target = document.createElement('div');
@@ -99,7 +147,6 @@
 
       const maxX = gameArea.clientWidth - 60;
       const maxY = gameArea.clientHeight - 60;
-
       target.style.left = Math.random() * maxX + 'px';
       target.style.top = Math.random() * maxY + 'px';
 
@@ -107,37 +154,52 @@
         score++;
         scoreBoard.textContent = `得分：${score}`;
         target.remove();
-        createTarget(); // 生成下一个
+        createTarget();
       };
 
       gameArea.appendChild(target);
     }
 
     function startGame() {
+      // 初始化
       score = 0;
+      timeLeft = 30;
       scoreBoard.textContent = `得分：${score}`;
+      timeLeftDisplay.textContent = `剩余时间：${timeLeft} 秒`;
       gameArea.innerHTML = '';
+      startBtn.textContent = '游戏中...';
+      startBtn.disabled = true;
+
       createTarget();
 
       gameInterval = setInterval(() => {
-        const current = document.querySelector('.target');
-        if (current) current.remove();
+        const existing = document.querySelector('.target');
+        if (existing) existing.remove();
         createTarget();
       }, 1000);
 
-      timer = setTimeout(() => {
-        clearInterval(gameInterval);
-        const target = document.querySelector('.target');
-        if (target) target.remove();
-        alert(`时间到！你的得分是 ${score} 分！`);
-      }, 30000);
+      countdownTimer = setInterval(() => {
+        timeLeft--;
+        timeLeftDisplay.textContent = `剩余时间：${timeLeft} 秒`;
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
     }
 
-    startBtn.onclick = () => {
-      clearTimeout(timer);
+    function endGame() {
       clearInterval(gameInterval);
-      startGame();
-    };
+      clearInterval(countdownTimer);
+      const target = document.querySelector('.target');
+      if (target) target.remove();
+
+      alert(`游戏结束！你的得分是 ${score} 分！`);
+      startBtn.textContent = '再玩一次';
+      startBtn.disabled = false;
+    }
+
+    startBtn.onclick = startGame;
   </script>
 </body>
 </html>
+
