@@ -2,10 +2,87 @@
   <head>
     <title>这是一个网页</title>
     <meta charset='utf-8'>
+    <style>
+      .game-container {
+        max-width: 800px;
+        margin: 20px auto;
+        text-align: center;
+      }
+      
+      .card {
+        width: 100px;
+        height: 100px;
+        border: 1px solid #ccc;
+        display: inline-block;
+        margin: 5px;
+        cursor: pointer;
+        background-color: #f0f0f0;
+        transition: transform 0.3s;
+      }
+      
+      .card.flipped {
+        transform: rotateY(180deg);
+      }
+    </style>
   </head>
 
   <body>
     <h1>这是一个网站的第一个网页</h1>
     <img src="https___17750977756.github.io_wll_.png">
+    
+    <!-- 游戏部分 -->
+    <div class="game-container">
+      <h2>记忆匹配游戏</h2>
+      <p>请找出相同的数字对!</p>
+      <div id="score">分数: 0</div>
+      <div id="gameArea"></div>
+    </div>
+
+    <script>
+      let score = 0;
+      const cards = [];
+      const cardValues = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6];
+      let flippedCards = [];
+      
+      function createGame() {
+        const gameArea = document.getElementById('gameArea');
+        cardValues.forEach((value, index) => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `<div class="front">?</div><div class="back">${value}</div>`;
+          card.dataset.value = value;
+          card.onclick = flipCard;
+          gameArea.appendChild(card);
+          cards.push(card);
+        });
+      }
+
+      function flipCard() {
+        if (flippedCards.length === 2 || flippedCards.includes(this)) return;
+
+        this.classList.add('flipped');
+        flippedCards.push(this);
+
+        if (flippedCards.length === 2) {
+          checkMatch();
+        }
+      }
+
+      function checkMatch() {
+        setTimeout(() => {
+          const [card1, card2] = flippedCards;
+          if (card1.dataset.value === card2.dataset.value) {
+            score += 10;
+            document.getElementById('score').textContent = `分数: ${score}`;
+          } else {
+            card1.classList.remove('flipped');
+            card2.classList.remove('flipped');
+          }
+          flippedCards = [];
+        }, 1000);
+      }
+
+      createGame();
+    </script>
   </body>
 </html>
